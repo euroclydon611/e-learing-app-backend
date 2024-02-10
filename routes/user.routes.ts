@@ -13,7 +13,7 @@ import {
   updatePassword,
   updateProfilePicture,
 } from "../controllers/user.controller";
-import { isAuthenticated, authorizeRoles } from "../middleware/auth";
+import { isAuthenticated } from "../middleware/auth";
 
 router.post("/registration", UserRegistration);
 router.post("/activate-user", UserActivation);

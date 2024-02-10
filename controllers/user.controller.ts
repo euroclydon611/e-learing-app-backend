@@ -84,14 +84,14 @@ const UserActivation = catchAsyncErrors(
         return next(new ErrorHandler("Invalid activation code", 400));
       }
 
-      const { name, email, password } = newUser.user;
+      const { name, email, password, courses } = newUser.user;
 
       const isEmailExist = await UserModel.findOne({ email });
       if (isEmailExist) {
         return next(new ErrorHandler("Email already exists", 400));
       }
 
-      const user = await UserModel.create({ name, email, password });
+      const user = await UserModel.create({ name, email, password, courses });
 
       res.status(201).json({ success: true });
     } catch (error: any) {
