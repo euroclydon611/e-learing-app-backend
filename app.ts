@@ -18,6 +18,7 @@ app.use(cors({ origin: process.env.ORIGIN }));
 //routers
 import userRoutes from "./routes/user.routes";
 import courseRoutes from "./routes/course.routes";
+import orderRoutes from "./routes/order.routes";
 
 //testing api
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
@@ -25,8 +26,7 @@ app.get("/test", (req: Request, res: Response, next: NextFunction) => {
 });
 
 //routes
-app.use("/api/v1", userRoutes);
-app.use("/api/v1", courseRoutes);
+app.use("/api/v1", userRoutes, courseRoutes, orderRoutes);
 
 //unknown routes
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
