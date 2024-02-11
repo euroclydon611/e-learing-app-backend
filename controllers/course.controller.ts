@@ -8,6 +8,7 @@ import { createCourse } from "../services/course.service";
 import { redis } from "../database/redis";
 import mongoose from "mongoose";
 import sendMail from "../utils/SendMail";
+import notificationModel from "../models/notification.model";
 
 export const uploadCourse = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
@@ -182,6 +183,13 @@ export const addQuestion = catchAsyncErrors(
       //save this updated course
       await course?.save();
 
+      //send notification
+      await notificationModel.create({
+        user: req?.user?._id,
+        title: "New Question Received",
+        message: `You have a new question on ${courseContent.title}`,
+      });
+
       res.status(200).json({ success: true, course });
     } catch (error: any) {
       return next(new ErrorHandler(error.message, 400));
@@ -240,7 +248,12 @@ export const addAnswer = catchAsyncErrors(
       await course?.save();
 
       if (req.user?._id === question?.user?._id) {
-        //create a notification
+        //send notification
+        await notificationModel.create({
+          user: req?.user?._id,
+          title: "New Question Reply Received",
+          message: `You have a new question reply on ${courseContent.title}`,
+        });
       } else {
         const data = {
           name: question?.user?.name,
@@ -316,12 +329,12 @@ export const addReview = catchAsyncErrors(
 
       await course.save();
 
-      const notification = {
+      //send notification
+      await notificationModel.create({
+        user: req?.user?._id,
         title: "New Review Received",
         message: `${req?.user?.name} has given a review on ${course?.name}`,
-      };
-
-      //create notification
+      });
 
       res.status(200).json({ success: true, course });
     } catch (error: any) {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import catchAsyncErrors from "../middleware/catchAsyncErrors";
 import ErrorHandler from "../utils/ErrorHandler";
-import orderModel, { IOrder } from "../models/order.model";
+import { IOrder } from "../models/order.model";
 import UserModel, { IUser } from "../models/user.model";
 import CourseModel from "../models/course.model";
 import notificationModel from "../models/notification.model";
@@ -77,7 +77,7 @@ export const createOrder = catchAsyncErrors(
       //send notification
       await notificationModel.create({
         user: user?._id,
-        title: "New Order",
+        title: "New Order Received",
         message: `You have a new order from ${course?.name}`,
       });
 
