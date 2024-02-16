@@ -9,6 +9,8 @@ import {
   addAnswer,
   addReview,
   addReplyToReview,
+  getAllCoursesByAdmin,
+  deleteCourse,
 } from "../controllers/course.controller";
 import { authorizeRoles, isAuthenticated } from "../middleware/auth";
 const router = express.Router();
@@ -20,12 +22,13 @@ router.post(
   uploadCourse
 );
 
-// router.get(
-//   "/get-all-orders",
-//   isAuthenticated,
-//   authorizeRoles("admin"),
-//   getAllOrders
-// );
+//get all courses --only admin
+router.get(
+  "/get-all-courses",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  getAllCoursesByAdmin
+);
 
 router.put(
   "/edit-course",
@@ -58,6 +61,14 @@ router.put(
   isAuthenticated,
   authorizeRoles("admin"),
   addReplyToReview
+);
+
+//delete course --only for admin users
+router.delete(
+  "/delete-course/:id",
+  isAuthenticated,
+  authorizeRoles("admin"),
+  deleteCourse
 );
 
 export default router;

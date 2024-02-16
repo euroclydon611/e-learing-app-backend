@@ -13,7 +13,11 @@ import sendToken, {
 import { redis } from "../database/redis";
 import cloudinary from "cloudinary";
 import { StatusCodes } from "http-status-codes";
-import { getUserById, getAllUsersService } from "../services/user.service";
+import {
+  getUserById,
+  getAllUsersService,
+  updateUserRoleService,
+} from "../services/user.service";
 
 interface IRegistrationBody {
   name: string;
@@ -23,7 +27,7 @@ interface IRegistrationBody {
 }
 
 // user account registration
-const UserRegistration = catchAsyncErrors(
+export const UserRegistration = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { name, email, password } = req.body;
@@ -69,7 +73,7 @@ interface IActivationRequest {
   activation_code: string;
 }
 
-const UserActivation = catchAsyncErrors(
+export const UserActivation = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { activation_token, activation_code } =
@@ -107,7 +111,7 @@ interface ILoginRequest {
   password: string;
 }
 
-const UserLogin = catchAsyncErrors(
+export const UserLogin = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, password } = req.body as ILoginRequest;
@@ -138,7 +142,7 @@ const UserLogin = catchAsyncErrors(
 );
 
 //update access token
-const updateAccessToken = catchAsyncErrors(
+export const updateAccessToken = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { refresh_token } = req.cookies;
@@ -191,7 +195,7 @@ const updateAccessToken = catchAsyncErrors(
 );
 
 // logout user
-const UserLogout = catchAsyncErrors(
+export const UserLogout = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       res.cookie("access_token", "", { maxAge: 1 });
@@ -209,7 +213,7 @@ const UserLogout = catchAsyncErrors(
 );
 
 //get user info
-const getUserInfo = catchAsyncErrors(
+export const getUserInfo = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const userId = req.user?._id;
@@ -227,7 +231,7 @@ interface ISocialAuthBody {
   name: string;
   avatar: string;
 }
-const socialAuth = catchAsyncErrors(
+export const socialAuth = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, name, avatar } = req.body as ISocialAuthBody;
@@ -250,7 +254,7 @@ interface IUpdateUserInfo {
   name?: string;
   email?: string;
 }
-const updateUserInfo = catchAsyncErrors(
+export const updateUserInfo = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { email, name } = req.body as IUpdateUserInfo;
@@ -285,7 +289,7 @@ interface IUpdatePassword {
   newPassword: string;
 }
 
-const updatePassword = catchAsyncErrors(
+export const updatePassword = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { oldPassword, newPassword } = req.body as IUpdatePassword;
@@ -320,7 +324,7 @@ interface IUpdateAvatar {
   avatar: string;
 }
 
-const updateProfilePicture = catchAsyncErrors(
+export const updateProfilePicture = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { avatar } = req.body as IUpdateAvatar;
@@ -378,15 +382,41 @@ export const getAllUsers = catchAsyncErrors(
   }
 );
 
-export {
-  UserRegistration,
-  UserActivation,
-  UserLogin,
-  updateAccessToken,
-  UserLogout,
-  getUserInfo,
-  socialAuth,
-  updateUserInfo,
-  updatePassword,
-  updateProfilePicture,
-};
+//update user role --only admin
+export const updateUserRole = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id, role } = req.body;
+      updateUserRoleService(res, id, role);
+    } catch (error: any) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//delete user --only for admin
+export const deleteUser = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { id: userId } = req.params;
+
+      const user = await UserModel.findById(userId);
+
+      if (!user) {
+        return next(new ErrorHandler("User not found", 400));
+      }
+
+      await UserModel.findByIdAndDelete(userId);
+
+      await redis.del(userId);
+
+      res
+        .status(200)
+        .json({ status: true, message: "User deleted successfully" });
+    } catch (error: any) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
