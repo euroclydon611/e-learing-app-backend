@@ -13,7 +13,7 @@ import sendToken, {
 import { redis } from "../database/redis";
 import cloudinary from "cloudinary";
 import { StatusCodes } from "http-status-codes";
-import { getUserById } from "../services/user.service";
+import { getUserById, getAllUsersService } from "../services/user.service";
 
 interface IRegistrationBody {
   name: string;
@@ -359,6 +359,18 @@ const updateProfilePicture = catchAsyncErrors(
       await redis.set(userId, JSON.stringify(user));
 
       res.status(StatusCodes.OK).json({ success: true, user });
+    } catch (error: any) {
+      console.log(error);
+      return next(new ErrorHandler(error.message, 400));
+    }
+  }
+);
+
+//get all users --only for admin users
+export const getAllUsers = catchAsyncErrors(
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      getAllUsersService(res);
     } catch (error: any) {
       console.log(error);
       return next(new ErrorHandler(error.message, 400));

@@ -20,6 +20,13 @@ router.post(
   uploadCourse
 );
 
+// router.get(
+//   "/get-all-orders",
+//   isAuthenticated,
+//   authorizeRoles("admin"),
+//   getAllOrders
+// );
+
 router.put(
   "/edit-course",
   isAuthenticated,
