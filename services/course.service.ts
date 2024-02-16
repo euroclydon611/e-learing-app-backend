@@ -10,3 +10,9 @@ export const createCourse = catchAsyncErrors(
     res.status(StatusCodes.CREATED).json({ success: true, course });
   }
 );
+
+export const getAllCoursesService = async (res: Response) => {
+  const courses = await CourseModel.find().sort({ createdAt: -1 });
+
+  res.status(200).json({ success: true, courses });
+};
