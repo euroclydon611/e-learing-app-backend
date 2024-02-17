@@ -146,7 +146,7 @@ export const updateAccessToken = catchAsyncErrors(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const { refresh_token } = req.cookies;
-      console.log(refresh_token);
+      // console.log(refresh_token);
 
       const decoded = jwt.verify(
         refresh_token,
@@ -185,6 +185,8 @@ export const updateAccessToken = catchAsyncErrors(
 
       res.cookie("access_token", accessToken, accessTokenOptions);
       res.cookie("refresh_token", refreshToken, refreshTokenOptions);
+
+      await redis.set(user._id, JSON.stringify(user), "EX", 604800); //7days
 
       res.json({ success: true, accessToken });
     } catch (error: any) {

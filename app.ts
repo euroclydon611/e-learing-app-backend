@@ -21,6 +21,7 @@ import courseRoutes from "./routes/course.routes";
 import orderRoutes from "./routes/order.routes";
 import notificationRoutes from "./routes/notification.routes";
 import analyticsRoutes from "./routes/analytics.routes";
+import layoutRoutes from "./routes/layout.routes";
 
 //testing api
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
@@ -34,7 +35,8 @@ app.use(
   courseRoutes,
   orderRoutes,
   notificationRoutes,
-  analyticsRoutes
+  analyticsRoutes,
+  layoutRoutes
 );
 
 //unknown routes
