@@ -422,7 +422,7 @@ export const deleteCourse = catchAsyncErrors(
 
       res
         .status(200)
-        .json({ status: true, message: "Course deleted successfully" });
+        .json({ success: true, message: "Course deleted successfully" });
     } catch (error: any) {
       console.log(error);
       return next(new ErrorHandler(error.message, 400));
