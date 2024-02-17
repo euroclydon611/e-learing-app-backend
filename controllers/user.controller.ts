@@ -413,7 +413,7 @@ export const deleteUser = catchAsyncErrors(
 
       res
         .status(200)
-        .json({ status: true, message: "User deleted successfully" });
+        .json({ success: true, message: "User deleted successfully" });
     } catch (error: any) {
       console.log(error);
       return next(new ErrorHandler(error.message, 400));

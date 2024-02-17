@@ -20,6 +20,7 @@ import userRoutes from "./routes/user.routes";
 import courseRoutes from "./routes/course.routes";
 import orderRoutes from "./routes/order.routes";
 import notificationRoutes from "./routes/notification.routes";
+import analyticsRoutes from "./routes/analytics.routes";
 
 //testing api
 app.get("/test", (req: Request, res: Response, next: NextFunction) => {
@@ -27,13 +28,19 @@ app.get("/test", (req: Request, res: Response, next: NextFunction) => {
 });
 
 //routes
-app.use("/api/v1", userRoutes, courseRoutes, orderRoutes, notificationRoutes);
+app.use(
+  "/api/v1",
+  userRoutes,
+  courseRoutes,
+  orderRoutes,
+  notificationRoutes,
+  analyticsRoutes
+);
 
 //unknown routes
 app.all("*", (req: Request, res: Response, next: NextFunction) => {
   const err = new ErrorHandler(`Route ${req.originalUrl} not found`, 400);
   next(err);
 });
-
 
 app.use(ErrorHandlerMiddleware);
